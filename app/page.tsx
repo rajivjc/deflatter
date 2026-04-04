@@ -134,7 +134,7 @@ export default function Home() {
   // INPUT SCREEN
   if (screen === "input") {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 20px 40px" }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 20px 40px", maxWidth: "100vw", overflowX: "hidden" as const }}>
         <div style={{ width: "100%", maxWidth: 640 }}>
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 40 }}>
@@ -237,7 +237,7 @@ export default function Home() {
             ].map((step) => (
               <div key={step.num} style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
                 <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, color: "rgba(255,107,53,0.3)", fontSize: 15 }}>{step.num}</span>
-                <span style={{ fontSize: 13, color: "#999" }}>{step.text}</span>
+                <span style={{ fontSize: 13, color: "#999", minWidth: 0 }}>{step.text}</span>
               </div>
             ))}
           </div>
@@ -252,7 +252,7 @@ export default function Home() {
   // LOADING SCREEN
   if (screen === "loading") {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24 }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, maxWidth: "100vw", overflowX: "hidden" as const }}>
         <div style={{ display: "flex", gap: 8 }}>
           {[0, 0.2, 0.4].map((delay, i) => (
             <div
@@ -280,7 +280,7 @@ export default function Home() {
     const shareUrl = "https://deflatter.vercel.app";
 
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 20px 40px" }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 20px 40px", maxWidth: "100vw", overflowX: "hidden" as const }}>
         <div style={{ width: "100%", maxWidth: 640 }}>
 
           {/* Beat 1 — Score Ring */}
@@ -293,10 +293,10 @@ export default function Home() {
 
           {/* Beat 2 — What your AI hid */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0.2s", borderLeft: `3px solid ${tier.color}`, background: "#111111", padding: "14px 18px", marginBottom: 28 }}>
-            <div style={{ fontSize: 11, color: tier.color, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: tier.color, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>
               What your AI hid from you
             </div>
-            <div style={{ fontSize: 15, color: "#ddd", fontStyle: "italic" }}>
+            <div style={{ fontSize: 15, color: "#ddd", fontStyle: "italic", wordBreak: "break-word" as const }}>
               &ldquo;{result.hidden}&rdquo;
             </div>
           </div>
@@ -341,7 +341,7 @@ export default function Home() {
                 What your AI said
               </button>
             </div>
-            <div style={{ fontSize: 14, lineHeight: 1.75, whiteSpace: "pre-line", color: activeTab === "honest" ? "#ccc" : "#aaa" }}>
+            <div style={{ fontSize: 14, lineHeight: 1.75, whiteSpace: "pre-line", color: activeTab === "honest" ? "#ccc" : "#aaa", wordBreak: "break-word" as const }}>
               {activeTab === "honest" ? result.honestResponse : result.defaultResponse}
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function Home() {
               Sycophancy Patterns Detected
             </div>
             {result.indicators.map((ind, i) => (
-              <div key={i} style={{ fontSize: 13, color: "#999", borderLeft: "1px solid #444", paddingLeft: 14, marginBottom: 10 }}>
+              <div key={i} style={{ fontSize: 13, color: "#999", borderLeft: "1px solid #444", paddingLeft: 14, marginBottom: 10, wordBreak: "break-word" as const, minWidth: 0 }}>
                 {ind}
               </div>
             ))}
@@ -394,7 +394,7 @@ export default function Home() {
                 {/* Hidden callout */}
                 <div style={{ borderLeft: `2px solid ${tier.color}99`, paddingLeft: 12, marginBottom: 20 }}>
                   <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", marginBottom: 4 }}>What your AI hid from you</div>
-                  <div style={{ fontSize: 14, color: "#aaa", fontStyle: "italic" }}>&ldquo;{result.hidden}&rdquo;</div>
+                  <div style={{ fontSize: 14, color: "#aaa", fontStyle: "italic", wordBreak: "break-word" as const }}>&ldquo;{result.hidden}&rdquo;</div>
                 </div>
                 <div style={{ fontSize: 12, color: "#777" }}>deflatter.vercel.app</div>
               </div>
