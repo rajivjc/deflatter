@@ -483,11 +483,9 @@ function Footer() {
   return (
     <div style={{ marginTop: 60, paddingTop: 20, borderTop: "1px solid #141414", textAlign: "center" }}>
       <div style={{ fontSize: 11, marginBottom: 6 }}>
-        <a href="https://www.linkedin.com/in/rajivchockalingam/" target="_blank" rel="noopener noreferrer" style={{ color: "#555", borderBottom: "1px solid #222", textDecoration: "none" }}>
-          Built by RC
+        <a href="https://www.linkedin.com/in/rajivjacobcheriyan/" target="_blank" rel="noopener noreferrer" style={{ color: "#555", borderBottom: "1px solid #222", textDecoration: "none" }}>
+          Built by Rajiv Cheriyan
         </a>
-        <span style={{ color: "#333" }}> · </span>
-        <span style={{ color: "#444", borderBottom: "1px solid #222" }}>Inspired by a LinkedIn post about AI sycophancy</span>
       </div>
       <div style={{ fontSize: 10, color: "#222" }}>
         Both responses use the same model · Same question, different prompt
