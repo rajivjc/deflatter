@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-@theme inline {
-  --font-syne: var(--font-syne);
-  --font-mono: var(--font-mono), 'IBM Plex Mono', monospace;
-}
-
 * { border-radius: 0 !important; }
 
 textarea::placeholder { color: #444; }

@@ -34,10 +34,10 @@ function getScoreTier(score: number): { label: string; color: string } {
 }
 
 function ScoreRing({ score, color }: { score: number; color: string }) {
-  const [displayScore, setDisplayScore] = useState(0);
-  const [offset, setOffset] = useState(339.292);
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
+  const [displayScore, setDisplayScore] = useState(0);
+  const [offset, setOffset] = useState(circumference);
 
   useEffect(() => {
     const targetOffset = circumference - (score / 100) * circumference;
