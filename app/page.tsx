@@ -68,7 +68,7 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
       </svg>
       <div style={{ marginTop: -95, textAlign: "center" }}>
         <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 42, fontWeight: 800, color }}>{displayScore}</span>
-        <div style={{ fontSize: 10, color: "#888" }}>/100</div>
+        <div style={{ fontSize: 11, color: "#888" }}>/100</div>
       </div>
       <div style={{ height: 45 }} />
     </div>
@@ -139,7 +139,7 @@ export default function Home() {
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 40 }}>
             <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 38, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", marginBottom: 12 }}>DeFlatter</h1>
-            <p style={{ fontSize: 13, color: "#666", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>
               Same question. Two answers.<br />
               See what your AI <span style={{ color: "#ff6b35" }}>isn&apos;t telling you</span>.
             </p>
@@ -158,11 +158,11 @@ export default function Home() {
                 }}
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 11,
+                  fontSize: 12,
                   padding: "6px 12px",
                   background: activeCategory === cat.label ? "#1c1c1c" : "transparent",
                   border: `1px solid ${activeCategory === cat.label ? "rgba(255,107,53,0.25)" : "#333"}`,
-                  color: activeCategory === cat.label ? "#ff6b35" : "#999",
+                  color: activeCategory === cat.label ? "#ff6b35" : "#aaa",
                   cursor: "pointer",
                 }}
               >
@@ -182,7 +182,7 @@ export default function Home() {
             style={{
               width: "100%",
               fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 13,
+              fontSize: 14,
               padding: "14px 16px",
               background: "#111111",
               border: "1px solid #333",
@@ -195,14 +195,14 @@ export default function Home() {
 
           {/* Error */}
           {error && (
-            <div style={{ fontSize: 11, color: "#ff2d2d", background: "rgba(255,45,45,0.06)", border: "1px solid rgba(255,45,45,0.12)", padding: "8px 12px", marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: "#ff2d2d", background: "rgba(255,45,45,0.06)", border: "1px solid rgba(255,45,45,0.12)", padding: "8px 12px", marginTop: 8 }}>
               {error}
             </div>
           )}
 
           {/* Row below textarea */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-            <span style={{ fontSize: 11, color: input.length > 280 ? "#ff6b35" : "#777" }}>
+            <span style={{ fontSize: 12, color: input.length > 280 ? "#ff6b35" : "#777" }}>
               {input.length}/300
             </span>
             <button
@@ -210,7 +210,7 @@ export default function Home() {
               onClick={handleSubmit}
               style={{
                 fontFamily: "'Syne', sans-serif",
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 700,
                 textTransform: "uppercase",
                 padding: "10px 24px",
@@ -236,8 +236,8 @@ export default function Home() {
               { num: "03", text: "We measure the gap between them" },
             ].map((step) => (
               <div key={step.num} style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
-                <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, color: "rgba(255,107,53,0.25)", fontSize: 14 }}>{step.num}</span>
-                <span style={{ fontSize: 12, color: "#999" }}>{step.text}</span>
+                <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, color: "rgba(255,107,53,0.3)", fontSize: 15 }}>{step.num}</span>
+                <span style={{ fontSize: 13, color: "#999" }}>{step.text}</span>
               </div>
             ))}
           </div>
@@ -267,7 +267,7 @@ export default function Home() {
             />
           ))}
         </div>
-        <p key={loadingMsg} style={{ fontSize: 13, color: "#666", fontStyle: "italic", animation: "fadeUp 0.4s ease" }}>
+        <p key={loadingMsg} style={{ fontSize: 14, color: "#888", fontStyle: "italic", animation: "fadeUp 0.4s ease" }}>
           {LOADING_MESSAGES[loadingMsg]}
         </p>
       </div>
@@ -286,17 +286,17 @@ export default function Home() {
           {/* Beat 1 — Score Ring */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0s", textAlign: "center", marginBottom: 32 }}>
             <ScoreRing score={result.score} color={tier.color} />
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 700, color: tier.color, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 4 }}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700, color: tier.color, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 4 }}>
               {tier.label}
             </div>
           </div>
 
           {/* Beat 2 — What your AI hid */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0.2s", borderLeft: `3px solid ${tier.color}`, background: "#111111", padding: "14px 18px", marginBottom: 28 }}>
-            <div style={{ fontSize: 10, color: tier.color, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: tier.color, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600, marginBottom: 8 }}>
               What your AI hid from you
             </div>
-            <div style={{ fontSize: 14, color: "#ddd", fontStyle: "italic" }}>
+            <div style={{ fontSize: 15, color: "#ddd", fontStyle: "italic" }}>
               &ldquo;{result.hidden}&rdquo;
             </div>
           </div>
@@ -309,7 +309,7 @@ export default function Home() {
                 style={{
                   flex: 1,
                   fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 11,
+                  fontSize: 12,
                   textTransform: "uppercase",
                   letterSpacing: "0.04em",
                   padding: "10px 0",
@@ -327,7 +327,7 @@ export default function Home() {
                 style={{
                   flex: 1,
                   fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 11,
+                  fontSize: 12,
                   textTransform: "uppercase",
                   letterSpacing: "0.04em",
                   padding: "10px 0",
@@ -341,18 +341,18 @@ export default function Home() {
                 What your AI said
               </button>
             </div>
-            <div style={{ fontSize: 13, lineHeight: 1.75, whiteSpace: "pre-line", color: activeTab === "honest" ? "#ccc" : "#aaa" }}>
+            <div style={{ fontSize: 14, lineHeight: 1.75, whiteSpace: "pre-line", color: activeTab === "honest" ? "#ccc" : "#aaa" }}>
               {activeTab === "honest" ? result.honestResponse : result.defaultResponse}
             </div>
           </div>
 
           {/* Beat 4 — Sycophancy Patterns */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0.5s", marginBottom: 36 }}>
-            <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, marginBottom: 14 }}>
               Sycophancy Patterns Detected
             </div>
             {result.indicators.map((ind, i) => (
-              <div key={i} style={{ fontSize: 12, color: "#999", borderLeft: "1px solid #444", paddingLeft: 14, marginBottom: 10 }}>
+              <div key={i} style={{ fontSize: 13, color: "#999", borderLeft: "1px solid #444", paddingLeft: 14, marginBottom: 10 }}>
                 {ind}
               </div>
             ))}
@@ -381,22 +381,22 @@ export default function Home() {
                 opacity: 0.06,
               }} />
               <div style={{ position: "relative" }}>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 13, fontWeight: 800, color: "#fff", marginBottom: 24 }}>DeFlatter</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 24 }}>DeFlatter</div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
                   <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 64, fontWeight: 800, color: tier.color, lineHeight: 1 }}>{result.score}</span>
-                  <span style={{ fontSize: 16, color: "#888" }}>/100</span>
+                  <span style={{ fontSize: 17, color: "#888" }}>/100</span>
                 </div>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 13, fontWeight: 700, color: tier.color, textTransform: "uppercase", marginBottom: 20 }}>{tier.label}</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, color: tier.color, textTransform: "uppercase", marginBottom: 20 }}>{tier.label}</div>
                 {/* Progress bar */}
                 <div style={{ height: 3, background: "#2a2a2a", marginBottom: 20 }}>
                   <div style={{ height: 3, width: `${result.score}%`, background: `linear-gradient(90deg, transparent, ${tier.color})` }} />
                 </div>
                 {/* Hidden callout */}
                 <div style={{ borderLeft: `2px solid ${tier.color}99`, paddingLeft: 12, marginBottom: 20 }}>
-                  <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 4 }}>What your AI hid from you</div>
-                  <div style={{ fontSize: 13, color: "#aaa", fontStyle: "italic" }}>&ldquo;{result.hidden}&rdquo;</div>
+                  <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase", marginBottom: 4 }}>What your AI hid from you</div>
+                  <div style={{ fontSize: 14, color: "#aaa", fontStyle: "italic" }}>&ldquo;{result.hidden}&rdquo;</div>
                 </div>
-                <div style={{ fontSize: 11, color: "#777" }}>deflatter.vercel.app</div>
+                <div style={{ fontSize: 12, color: "#777" }}>deflatter.vercel.app</div>
               </div>
             </div>
 
@@ -409,7 +409,7 @@ export default function Home() {
                   style={{
                     flex: 1,
                     fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: 500,
                     padding: "14px 16px",
                     background: "#0A66C2",
@@ -457,7 +457,7 @@ export default function Home() {
                   style={{
                     flex: 1,
                     fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 11,
+                    fontSize: 12,
                     padding: "12px 16px",
                     background: "transparent",
                     border: `1px solid ${copied ? "rgba(0,230,118,0.25)" : "#444"}`,
@@ -477,7 +477,7 @@ export default function Home() {
                   style={{
                     flex: 1,
                     fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 11,
+                    fontSize: 12,
                     padding: "12px 16px",
                     background: "#000",
                     border: "1px solid #333",
@@ -501,7 +501,7 @@ export default function Home() {
               style={{
                 width: "100%",
                 fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: "uppercase",
                 padding: "12px",
                 background: "transparent",
@@ -527,10 +527,10 @@ export default function Home() {
 function Footer() {
   return (
     <div style={{ marginTop: 60, paddingTop: 20, borderTop: "1px solid #2a2a2a", textAlign: "center" }}>
-      <div style={{ fontSize: 10, color: "#666", marginBottom: 6 }}>
+      <div style={{ fontSize: 11, color: "#777" }}>
         Both responses use the same model · Same question, different prompt
       </div>
-      <div style={{ fontSize: 11 }}>
+      <div style={{ fontSize: 12, marginTop: 6 }}>
         <a href="https://www.linkedin.com/in/rajivjacobcheriyan/" target="_blank" rel="noopener noreferrer" style={{ color: "#999", borderBottom: "1px solid #444", textDecoration: "none" }}>
           Rajiv Cheriyan
         </a>

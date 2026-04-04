@@ -2,7 +2,7 @@
 
 * { border-radius: 0 !important; }
 
-textarea::placeholder { color: #777; }
+textarea::placeholder { color: #888; }
 textarea:focus { outline: none; border-color: #444 !important; }
 button { transition: all 0.15s ease; }
 
