@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-syne: var(--font-syne);
+  --font-mono: var(--font-mono), 'IBM Plex Mono', monospace;
+}
+
+* { border-radius: 0 !important; }
+
+textarea::placeholder { color: #444; }
+textarea:focus { outline: none; border-color: #333 !important; }
+button { transition: all 0.15s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse3 {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
