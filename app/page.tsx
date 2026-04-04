@@ -134,8 +134,8 @@ export default function Home() {
   // INPUT SCREEN
   if (screen === "input") {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 20px 40px", maxWidth: "100vw", overflowX: "hidden" as const }}>
-        <div style={{ width: "100%", maxWidth: 640 }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 20px 40px", width: "100%", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
+        <div style={{ width: "100%", maxWidth: 640, overflow: "hidden" as const }}>
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 40 }}>
             <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 38, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", marginBottom: 12 }}>DeFlatter</h1>
@@ -252,7 +252,7 @@ export default function Home() {
   // LOADING SCREEN
   if (screen === "loading") {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, maxWidth: "100vw", overflowX: "hidden" as const }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, width: "100%", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
         <div style={{ display: "flex", gap: 8 }}>
           {[0, 0.2, 0.4].map((delay, i) => (
             <div
@@ -280,8 +280,8 @@ export default function Home() {
     const shareUrl = "https://deflatter.vercel.app";
 
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 20px 40px", maxWidth: "100vw", overflowX: "hidden" as const }}>
-        <div style={{ width: "100%", maxWidth: 640 }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 20px 40px", width: "100%", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
+        <div style={{ width: "100%", maxWidth: 640, overflow: "hidden" as const }}>
 
           {/* Beat 1 — Score Ring */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0s", textAlign: "center", marginBottom: 32 }}>
