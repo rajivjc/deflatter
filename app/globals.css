@@ -2,8 +2,8 @@
 
 * { border-radius: 0 !important; }
 
-textarea::placeholder { color: #444; }
-textarea:focus { outline: none; border-color: #333 !important; }
+textarea::placeholder { color: #777; }
+textarea:focus { outline: none; border-color: #444 !important; }
 button { transition: all 0.15s ease; }
 
 @keyframes fadeUp {
