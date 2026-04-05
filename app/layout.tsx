@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body className="bg-[#0a0a0a] text-[#e0e0e0] antialiased" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
+      <body className="bg-[#0a0a0a] text-[#e0e0e0] antialiased" style={{ fontFamily: "'IBM Plex Mono', monospace", overflow: "hidden", overflowY: "auto" }}>
         {children}
       </body>
     </html>
