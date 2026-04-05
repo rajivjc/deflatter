@@ -276,7 +276,7 @@ export default function Home() {
               maxLength={300}
               value={input}
               onChange={(e) => { setInput(e.target.value); setError(null); if (activeCategory && !CATEGORIES.find(c => c.text === e.target.value)) setActiveCategory(null); }}
-              placeholder="I think my startup idea for AI-powered invoicing is really strong — evaluate it"
+              placeholder="I think my idea is strong and everyone I've told agrees — evaluate it"
               style={{
                 width: "100%",
                 fontFamily: "'IBM Plex Sans', sans-serif",
@@ -402,7 +402,7 @@ export default function Home() {
   // RESULTS SCREEN
   if (screen === "results" && result) {
     if (typeof window !== "undefined") window.scrollTo(0, 0);
-    const shareText = `I asked AI the same question twice — one default prompt, one honest prompt.\n\nSycophancy Gap: ${result.score}/100 (${tier.label})\n\nWhat the default prompt didn't say:\n"${result.hidden}"\n\nTwo independent prompts. One evaluator. Same model.\nTry it → deflatter.vercel.app`;
+    const shareText = `I asked AI the same question twice — one default prompt, one honest prompt.\n\nSycophancy Gap: ${result.score}/100 (${tier.label})\n\nWhat the default prompt didn't say:\n"${result.hidden}"\n\nCan you score under 20? → deflatter.vercel.app`;
     const shareUrl = "https://deflatter.vercel.app";
 
     return (
@@ -417,6 +417,12 @@ export default function Home() {
             </div>
             <div style={{ fontSize: 11, color: "#666", marginTop: 8 }}>
               Estimates vary between runs · The comparison matters more than the number
+            </div>
+            <div style={{ fontSize: 12, color: "#888", marginTop: 14, fontStyle: "italic" }}>
+              {result.score >= 50
+                ? "Now try demanding honest feedback. See how far the needle drops."
+                : "Now try validating a risky decision. Watch the needle climb."
+              }
             </div>
           </div>
 
@@ -533,8 +539,10 @@ export default function Home() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
               {/* Primary row: LinkedIn + Download */}
               <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, "_blank")}
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
                     flex: 1,
                     fontFamily: "'IBM Plex Mono', monospace",
@@ -549,11 +557,12 @@ export default function Home() {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 8,
+                    textDecoration: "none",
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                   Share on LinkedIn
-                </button>
+                </a>
                 <button
                   onClick={async () => {
                     if (!shareCardRef.current) return;
@@ -615,8 +624,10 @@ export default function Home() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square"><rect x="8" y="8" width="13" height="13"/><path d="M4 16V4h12"/></svg>
                   {copied ? "Copied!" : "Copy text"}
                 </button>
-                <button
-                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, "_blank")}
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
                     flex: 1,
                     fontFamily: "'IBM Plex Mono', monospace",
@@ -630,11 +641,12 @@ export default function Home() {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 8,
+                    textDecoration: "none",
                   }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   Share on X
-                </button>
+                </a>
               </div>
             </div>
 
