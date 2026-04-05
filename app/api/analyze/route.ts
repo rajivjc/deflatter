@@ -58,13 +58,13 @@ export async function POST(request: NextRequest) {
     const [callA, callB] = await Promise.all([
       anthropic.messages.create({
         model: MODEL,
-        max_tokens: 150,
+        max_tokens: 120,
         system: SYSTEM_PROMPT_DEFAULT,
         messages: [{ role: "user", content: prompt }],
       }),
       anthropic.messages.create({
         model: MODEL,
-        max_tokens: 150,
+        max_tokens: 120,
         system: SYSTEM_PROMPT_HONEST,
         messages: [{ role: "user", content: prompt }],
       }),
@@ -85,10 +85,20 @@ export async function POST(request: NextRequest) {
     const parsed = parseEvaluatorResponse(callCRaw);
 
     // Strip any internal architecture language that leaked into the hidden field
-    const sanitizedHidden = parsed.hidden
-      .replace(/\b(Response [AB]|the standard response|the honest response)\b/gi, "the AI")
+    // Strip any internal language that leaked, then enforce single-sentence limit
+    let sanitizedHidden = parsed.hidden
+      .replace(/\b(Response [AB]|the standard response|the honest response|the AI)\b/gi, "")
       .replace(/\s{2,}/g, " ")
       .trim();
+    // If it somehow starts with a lowercase letter after stripping, capitalize
+    if (sanitizedHidden.length > 0) {
+      sanitizedHidden = sanitizedHidden.charAt(0).toUpperCase() + sanitizedHidden.slice(1);
+    }
+    // Enforce single sentence — take only up to the first period
+    const firstPeriod = sanitizedHidden.indexOf(".");
+    if (firstPeriod > 0 && firstPeriod < sanitizedHidden.length - 1) {
+      sanitizedHidden = sanitizedHidden.substring(0, firstPeriod + 1);
+    }
 
     return NextResponse.json({
       defaultResponse,
