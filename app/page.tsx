@@ -95,16 +95,20 @@ export default function Home() {
   }, [screen]);
 
   const handleSubmit = useCallback(async () => {
-    if (input.trim().length < 10) return;
+    if (input.trim().length < 10 || screen === "loading") return;
     setError(null);
     setScreen("loading");
     setLoadingMsg(0);
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: input }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Something went wrong.");
@@ -114,11 +118,15 @@ export default function Home() {
       setResult(data);
       setActiveTab("honest");
       setScreen("results");
-    } catch {
-      setError("Network error. Please try again.");
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("That took too long. Please try again.");
+      } else {
+        setError("Network error. Please try again.");
+      }
       setScreen("input");
     }
-  }, [input]);
+  }, [input, screen]);
 
   const handleReset = () => {
     setScreen("input");
@@ -133,12 +141,13 @@ export default function Home() {
 
   // INPUT SCREEN
   if (screen === "input") {
+    if (typeof window !== "undefined") window.scrollTo(0, 0);
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", overflow: "hidden" as const }}>
-        <div style={{ width: "100%", maxWidth: 640, padding: "80px 20px 40px", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
+        <div style={{ width: "100%", maxWidth: 640, padding: "48px 20px 24px", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
           {/* Header */}
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 38, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", marginBottom: 12 }}>DeFlatter</h1>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 32, fontWeight: 800, color: "#fff", letterSpacing: "-0.03em", marginBottom: 8 }}>DeFlatter</h1>
             <p style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>
               Same question. Two answers.<br />
               See what your AI <span style={{ color: "#ff6b35" }}>isn&apos;t telling you</span>.
@@ -146,7 +155,7 @@ export default function Home() {
           </div>
 
           {/* Category Chips */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.label}
@@ -174,7 +183,7 @@ export default function Home() {
           {/* Textarea */}
           <textarea
             ref={textareaRef}
-            rows={4}
+            rows={3}
             maxLength={300}
             value={input}
             onChange={(e) => { setInput(e.target.value); setError(null); if (activeCategory && !CATEGORIES.find(c => c.text === e.target.value)) setActiveCategory(null); }}
@@ -182,7 +191,7 @@ export default function Home() {
             style={{
               width: "100%",
               fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 14,
+              fontSize: 16,
               padding: "14px 16px",
               background: "#111111",
               border: "1px solid #333",
@@ -226,10 +235,10 @@ export default function Home() {
           </div>
 
           {/* Divider */}
-          <div style={{ borderTop: "1px solid #2a2a2a", marginTop: 44, marginBottom: 36 }} />
+          <div style={{ borderTop: "1px solid #2a2a2a", marginTop: 24, marginBottom: 20 }} />
 
           {/* Three-step explainer */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
               { num: "01", text: "Your question goes to a standard AI" },
               { num: "02", text: "Same question goes to an AI prompted for honesty" },
@@ -276,12 +285,13 @@ export default function Home() {
 
   // RESULTS SCREEN
   if (screen === "results" && result) {
+    if (typeof window !== "undefined") window.scrollTo(0, 0);
     const shareText = `I asked AI to evaluate my idea.\nThen I asked again — honestly.\n\nSycophancy Score: ${result.score}/100 (${tier.label})\n\nWhat my AI hid from me:\n"${result.hidden}"\n\nTry it yourself → deflatter.vercel.app`;
     const shareUrl = "https://deflatter.vercel.app";
 
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", overflow: "hidden" as const }}>
-        <div style={{ width: "100%", maxWidth: 640, padding: "60px 20px 40px", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
+        <div style={{ width: "100%", maxWidth: 640, padding: "40px 20px 24px", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
 
           {/* Beat 1 — Score Ring */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0s", textAlign: "center", marginBottom: 32 }}>
@@ -526,7 +536,7 @@ export default function Home() {
 
 function Footer() {
   return (
-    <div style={{ marginTop: 60, paddingTop: 20, borderTop: "1px solid #2a2a2a", textAlign: "center" }}>
+    <div style={{ marginTop: 28, paddingTop: 12, borderTop: "1px solid #2a2a2a", textAlign: "center" }}>
       <div style={{ fontSize: 11, color: "#777" }}>
         Both responses use the same model · Same question, different prompt
       </div>

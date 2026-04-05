@@ -23,7 +23,19 @@ body {
 
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: inherit; }
-button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+button:active { opacity: 0.7; }
+
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
 
 textarea::placeholder { color: #888; }
 textarea:focus { outline: none; border-color: #444 !important; }
