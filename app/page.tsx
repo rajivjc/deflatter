@@ -404,6 +404,7 @@ export default function Home() {
     if (typeof window !== "undefined") window.scrollTo(0, 0);
     const shareText = `I asked AI the same question twice — one default prompt, one honest prompt.\n\nSycophancy Gap: ${result.score}/100 (${tier.label})\n\nWhat the default prompt didn't say:\n"${result.hidden}"\n\nCan you score under 20? → deflatter.vercel.app`;
     const shareUrl = "https://deflatter.vercel.app";
+    const tweetText = `Sycophancy Gap: ${result.score}/100 (${tier.label})\n\nI asked AI the same question with two different prompts. The gap between "helpful" and "honest" is wild.\n\nCan you score under 20?`;
 
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", overflow: "hidden" as const }}>
@@ -539,10 +540,18 @@ export default function Home() {
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
               {/* Primary row: LinkedIn + Download */}
               <div style={{ display: "flex", gap: 8 }}>
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={async () => {
+                    if (navigator.share) {
+                      try {
+                        await navigator.share({ text: shareText, url: shareUrl });
+                      } catch (e) {
+                        // User cancelled — do nothing
+                      }
+                    } else {
+                      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, "_blank");
+                    }
+                  }}
                   style={{
                     flex: 1,
                     fontFamily: "'IBM Plex Mono', monospace",
@@ -557,12 +566,11 @@ export default function Home() {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 8,
-                    textDecoration: "none",
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                  Share on LinkedIn
-                </a>
+                  Share
+                </button>
                 <button
                   onClick={async () => {
                     if (!shareCardRef.current) return;
@@ -625,7 +633,7 @@ export default function Home() {
                   {copied ? "Copied!" : "Copy text"}
                 </button>
                 <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
