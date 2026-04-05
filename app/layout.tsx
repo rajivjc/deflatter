@@ -11,8 +11,19 @@ export const metadata: Metadata = {
     url: "https://deflatter.vercel.app",
     siteName: "DeFlatter",
     type: "website",
+    images: [
+      {
+        url: "https://deflatter.vercel.app/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "DeFlatter — See what your AI isn't telling you",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    images: ["https://deflatter.vercel.app/opengraph-image"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

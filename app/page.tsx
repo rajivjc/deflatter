@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { stripMarkdown } from "@/lib/parseResponse";
+import html2canvas from "html2canvas";
 
 interface Result {
   defaultResponse: string;
@@ -12,10 +13,10 @@ interface Result {
 }
 
 const CATEGORIES: { label: string; text: string }[] = [
+  { label: "Money Move", text: "I've stopped saving for retirement and put everything into crypto instead. My returns this year prove it's the smarter strategy" },
+  { label: "Life Advice", text: "I spent $2,000 on a weekend life coaching seminar and it completely changed my perspective. I think everyone should do it" },
   { label: "Risk Brief", text: "What could go wrong if a mid-size bank replaces its relationship managers with AI chatbots? I need the risks, not the upside" },
   { label: "Hot Take", text: "I think most enterprise SaaS will be replaced by AI agents within 5 years. Am I wrong?" },
-  { label: "Life Advice", text: "I spent $2,000 on a weekend life coaching seminar and it completely changed my perspective. I think everyone should do it" },
-  { label: "Money Move", text: "I've stopped saving for retirement and put everything into crypto instead. My returns this year prove it's the smarter strategy" },
 ];
 
 const LOADING_MESSAGES = [
@@ -160,6 +161,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [howItWorksOpen, setHowItWorksOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const shareCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (screen !== "loading") return;
@@ -488,7 +490,7 @@ export default function Home() {
           {/* Beat 5 — Share section */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0.6s" }}>
             {/* Share Card */}
-            <div style={{
+            <div ref={shareCardRef} style={{
               position: "relative",
               overflow: "hidden",
               background: `linear-gradient(135deg, #0c0c0c, ${tier.color}08)`,
@@ -553,9 +555,23 @@ export default function Home() {
                   Share on LinkedIn
                 </button>
                 <button
-                  onClick={() => {
-                    // TODO: html2canvas download — for now, prompt user to screenshot
-                    alert("Screenshot the card above to save as image. Auto-download coming soon.");
+                  onClick={async () => {
+                    if (!shareCardRef.current) return;
+                    try {
+                      const canvas = await html2canvas(shareCardRef.current, {
+                        backgroundColor: "#0a0a0a",
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                      });
+                      const link = document.createElement("a");
+                      link.download = `deflatter-${result.score}.png`;
+                      link.href = canvas.toDataURL("image/png");
+                      link.click();
+                    } catch (err) {
+                      console.error("Download failed:", err);
+                      alert("Download failed. Try screenshotting the card instead.");
+                    }
                   }}
                   style={{
                     width: 52,
