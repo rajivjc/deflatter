@@ -75,6 +75,19 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
   );
 }
 
+function autoExpandTextarea(el: HTMLTextAreaElement | null) {
+  if (!el) return;
+  el.style.height = "auto";
+  const maxHeight = 180;
+  if (el.scrollHeight > maxHeight) {
+    el.style.height = `${maxHeight}px`;
+    el.style.overflowY = "auto";
+  } else {
+    el.style.height = `${el.scrollHeight}px`;
+    el.style.overflowY = "hidden";
+  }
+}
+
 export default function Home() {
   const [screen, setScreen] = useState<"input" | "loading" | "results">("input");
   const [input, setInput] = useState("");
@@ -93,6 +106,10 @@ export default function Home() {
     }, 2200);
     return () => clearInterval(interval);
   }, [screen]);
+
+  useEffect(() => {
+    autoExpandTextarea(textareaRef.current);
+  }, [input]);
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 10 || screen === "loading") return;
@@ -135,6 +152,13 @@ export default function Home() {
     setResult(null);
     setError(null);
     setCopied(false);
+  };
+
+  const handleClear = () => {
+    setInput("");
+    setActiveCategory(null);
+    setError(null);
+    textareaRef.current?.focus();
   };
 
   const tier = result ? getScoreTier(result.score) : { label: "", color: "#fff" };
@@ -181,26 +205,53 @@ export default function Home() {
           </div>
 
           {/* Textarea */}
-          <textarea
-            ref={textareaRef}
-            rows={3}
-            maxLength={300}
-            value={input}
-            onChange={(e) => { setInput(e.target.value); setError(null); if (activeCategory && !CATEGORIES.find(c => c.text === e.target.value)) setActiveCategory(null); }}
-            placeholder="I think my startup idea for AI-powered invoicing is really strong — evaluate it"
-            style={{
-              width: "100%",
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 16,
-              padding: "14px 16px",
-              background: "#111111",
-              border: "1px solid #333",
-              color: "#e0e0e0",
-              resize: "none",
-              lineHeight: 1.6,
-              boxSizing: "border-box",
-            }}
-          />
+          <div style={{ position: "relative", width: "100%" }}>
+            <textarea
+              ref={textareaRef}
+              maxLength={300}
+              value={input}
+              onChange={(e) => { setInput(e.target.value); setError(null); if (activeCategory && !CATEGORIES.find(c => c.text === e.target.value)) setActiveCategory(null); }}
+              placeholder="I think my startup idea for AI-powered invoicing is really strong — evaluate it"
+              style={{
+                width: "100%",
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: 16,
+                padding: "14px 40px 14px 16px",
+                background: "#111111",
+                border: "1px solid #333",
+                color: "#e0e0e0",
+                resize: "none",
+                lineHeight: 1.6,
+                boxSizing: "border-box",
+                minHeight: 80,
+                maxHeight: 180,
+                overflowY: "hidden" as const,
+              }}
+            />
+            {input.length > 0 && (
+              <button
+                onClick={handleClear}
+                aria-label="Clear text"
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  width: 28,
+                  height: 28,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#222",
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            )}
+          </div>
 
           {/* Error */}
           {error && (
@@ -211,8 +262,8 @@ export default function Home() {
 
           {/* Row below textarea */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-            <span style={{ fontSize: 12, color: input.length > 280 ? "#ff6b35" : "#777" }}>
-              {input.length}/300
+            <span style={{ fontSize: 12, color: 300 - input.length <= 20 ? "#ff2d2d" : 300 - input.length <= 60 ? "#e8a317" : "#555" }}>
+              {300 - input.length} remaining
             </span>
             <button
               disabled={input.trim().length < 10}
