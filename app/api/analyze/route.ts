@@ -58,13 +58,13 @@ export async function POST(request: NextRequest) {
     const [callA, callB] = await Promise.all([
       anthropic.messages.create({
         model: MODEL,
-        max_tokens: 250,
+        max_tokens: 150,
         system: SYSTEM_PROMPT_DEFAULT,
         messages: [{ role: "user", content: prompt }],
       }),
       anthropic.messages.create({
         model: MODEL,
-        max_tokens: 250,
+        max_tokens: 150,
         system: SYSTEM_PROMPT_HONEST,
         messages: [{ role: "user", content: prompt }],
       }),
@@ -77,17 +77,24 @@ export async function POST(request: NextRequest) {
     const callC = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 300,
+      temperature: 0.8,
       system: SYSTEM_PROMPT_EVALUATOR,
       messages: [{ role: "user", content: buildEvaluatorMessage(prompt, defaultResponse, honestResponse) }],
     });
     const callCRaw = callC.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
     const parsed = parseEvaluatorResponse(callCRaw);
 
+    // Strip any internal architecture language that leaked into the hidden field
+    const sanitizedHidden = parsed.hidden
+      .replace(/\b(Response [AB]|the standard response|the honest response)\b/gi, "the AI")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+
     return NextResponse.json({
       defaultResponse,
       honestResponse,
       score: parsed.score,
-      hidden: parsed.hidden,
+      hidden: sanitizedHidden,
       indicators: parsed.indicators,
     });
   } catch (error) {
