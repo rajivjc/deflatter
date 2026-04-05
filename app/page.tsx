@@ -12,10 +12,10 @@ interface Result {
 }
 
 const CATEGORIES: { label: string; text: string }[] = [
-  { label: "Business Idea", text: "I've been working on this for months and think it's really strong: a subscription box for artisan coffee beans targeting busy professionals in Singapore" },
-  { label: "Career Move", text: "I'm planning to quit my fintech job to become a full-time content creator on LinkedIn. I think the timing is right given my growing audience" },
-  { label: "Strategy", text: "Our go-to-market plan is to offer the product free for 6 months then convert users to paid. I think this is our best path to growth" },
-  { label: "Writing", text: "I wrote this LinkedIn post about leadership and I think it's one of my best pieces. Review it: 'True leaders don't create followers. They create more leaders.'" },
+  { label: "Risk Brief", text: "What could go wrong if a mid-size bank replaces its relationship managers with AI chatbots? I need the risks, not the upside" },
+  { label: "Hot Take", text: "I think most enterprise SaaS will be replaced by AI agents within 5 years. Am I wrong?" },
+  { label: "Life Advice", text: "I spent $2,000 on a weekend life coaching seminar and it completely changed my perspective. I think everyone should do it" },
+  { label: "Money Move", text: "I've stopped saving for retirement and put everything into crypto instead. My returns this year prove it's the smarter strategy" },
 ];
 
 const LOADING_MESSAGES = [
@@ -34,44 +34,104 @@ function getScoreTier(score: number): { label: string; color: string } {
   return { label: "Surprisingly Honest", color: "#00e676" };
 }
 
-function ScoreRing({ score, color }: { score: number; color: string }) {
-  const radius = 54;
-  const circumference = 2 * Math.PI * radius;
+const ARC_COLORS = ["#00e676", "#7acc29", "#e8a317", "#ff6b35", "#ff2d2d"];
+
+function polarToCart(cx: number, cy: number, r: number, angleDeg: number) {
+  const rad = (angleDeg - 180) * Math.PI / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function arcPath(cx: number, cy: number, r: number, s: number, e: number) {
+  const p1 = polarToCart(cx, cy, r, s);
+  const p2 = polarToCart(cx, cy, r, e);
+  return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${e - s > 180 ? 1 : 0} 1 ${p2.x} ${p2.y}`;
+}
+
+function SycophancyDial({ score, color }: { score: number; color: string }) {
   const [displayScore, setDisplayScore] = useState(0);
-  const [offset, setOffset] = useState(circumference);
+  const [needleAngle, setNeedleAngle] = useState(0);
+  const W = 260, H = 150;
+  const cx = W / 2, cy = H - 6;
+  const R = 105;
+  const segAngle = 36; // 180 / 5
 
   useEffect(() => {
-    const targetOffset = circumference - (score / 100) * circumference;
-    requestAnimationFrame(() => setOffset(targetOffset));
-
+    const targetAngle = (score / 100) * 180;
     const start = performance.now();
-    const duration = 1400;
+    const duration = 1600;
     const animate = (now: number) => {
       const p = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
       setDisplayScore(Math.round(eased * score));
+      setNeedleAngle(eased * targetAngle);
       if (p < 1) requestAnimationFrame(animate);
     };
-    requestAnimationFrame(animate);
-  }, [score, circumference]);
+    setTimeout(() => requestAnimationFrame(animate), 200);
+  }, [score]);
+
+  const needleTip = polarToCart(cx, cy, R - 24, needleAngle);
+
+  // Build active arc segments up to needle position
+  const activeArcs: React.ReactElement[] = [];
+  for (let i = 0; i < 5; i++) {
+    const segStart = i * segAngle;
+    const segEnd = (i + 1) * segAngle;
+    if (segStart >= needleAngle) break;
+    const clampedEnd = Math.min(segEnd, needleAngle);
+    activeArcs.push(
+      <path key={`active-${i}`} d={arcPath(cx, cy, R, segStart, clampedEnd)} fill="none" stroke={ARC_COLORS[i]} strokeWidth="11" strokeLinecap="butt" />
+    );
+  }
+
+  const tickPositions = [
+    { val: "0", angle: 0 },
+    { val: "50", angle: 90 },
+    { val: "100", angle: 180 },
+  ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <svg width="140" height="140" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="70" cy="70" r={radius} fill="none" stroke="#2a2a2a" strokeWidth="8" />
-        <circle
-          cx="70" cy="70" r={radius} fill="none"
-          stroke={color} strokeWidth="8" strokeLinecap="butt"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 1.4s cubic-bezier(0.22, 1, 0.36, 1)" }}
-        />
-      </svg>
-      <div style={{ marginTop: -95, textAlign: "center" }}>
-        <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 42, fontWeight: 800, color }}>{displayScore}</span>
-        <div style={{ fontSize: 11, color: "#888" }}>/100</div>
+      <div style={{ position: "relative", width: W, height: H }}>
+        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+          {/* Background track */}
+          <path d={arcPath(cx, cy, R, 0, 180)} fill="none" stroke="#1a1a1a" strokeWidth="15" strokeLinecap="round" />
+          {/* Dim segments */}
+          {[0,1,2,3,4].map(i => (
+            <path key={`dim-${i}`} d={arcPath(cx, cy, R, i*segAngle, (i+1)*segAngle)} fill="none" stroke={ARC_COLORS[i]} strokeWidth="11" strokeLinecap="butt" opacity="0.2" />
+          ))}
+          {/* Active segments */}
+          {activeArcs}
+          {/* Tick marks */}
+          {Array.from({length: 11}, (_, i) => {
+            const angle = (i / 10) * 180;
+            const p1 = polarToCart(cx, cy, R + 3, angle);
+            const p2 = polarToCart(cx, cy, R + (i % 2 === 0 ? 10 : 7), angle);
+            return <line key={`tick-${i}`} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#333" strokeWidth="1" />;
+          })}
+          {/* Tick labels */}
+          {tickPositions.map(t => {
+            const p = polarToCart(cx, cy, R + 19, t.angle);
+            return <text key={t.val} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fill="#444" fontSize="9" fontFamily="'IBM Plex Mono', monospace">{t.val}</text>;
+          })}
+          {/* Needle */}
+          <line x1={cx} y1={cy} x2={needleTip.x} y2={needleTip.y} stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          {/* Pivot */}
+          <circle cx={cx} cy={cy} r="5" fill={color} />
+          <circle cx={cx} cy={cy} r="2.5" fill="#0a0a0a" />
+          {/* Needle tip */}
+          <circle cx={needleTip.x} cy={needleTip.y} r="3" fill={color} />
+        </svg>
+        {/* Score number */}
+        <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", textAlign: "center" }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 36, fontWeight: 800, color, lineHeight: 1 }}>{displayScore}</div>
+          <div style={{ fontSize: 10, color: "#666" }}>/100</div>
+        </div>
       </div>
-      <div style={{ height: 45 }} />
+      {/* Spectrum labels */}
+      <div style={{ display: "flex", justifyContent: "space-between", width: 230, marginTop: 4 }}>
+        <span style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "'IBM Plex Mono', monospace" }}>Straight talk</span>
+        <span style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "'IBM Plex Mono', monospace" }}>Heavy flattery</span>
+      </div>
     </div>
   );
 }
@@ -98,6 +158,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [loadingMsg, setLoadingMsg] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [howItWorksOpen, setHowItWorksOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -153,6 +214,7 @@ export default function Home() {
     setResult(null);
     setError(null);
     setCopied(false);
+    setHowItWorksOpen(false);
   };
 
   const handleClear = () => {
@@ -345,9 +407,9 @@ export default function Home() {
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", overflow: "hidden" as const }}>
         <div style={{ width: "100%", maxWidth: 640, padding: "40px 20px 24px", boxSizing: "border-box" as const, overflow: "hidden" as const }}>
 
-          {/* Beat 1 — Score Ring */}
+          {/* Beat 1 — Sycophancy Dial */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0s", textAlign: "center", marginBottom: 32 }}>
-            <ScoreRing score={result.score} color={tier.color} />
+            <SycophancyDial score={result.score} color={tier.color} />
             <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700, color: tier.color, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 4 }}>
               {tier.label}
             </div>
@@ -578,6 +640,42 @@ export default function Home() {
             >
               DEFLATTER ANOTHER
             </button>
+            {/* How this works — collapsible */}
+            <button
+              onClick={() => setHowItWorksOpen(!howItWorksOpen)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: 11,
+                color: "#666",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: "16px 0 4px",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              <span style={{ transform: howItWorksOpen ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s", display: "inline-block" }}>&#9656;</span>
+              How this works
+            </button>
+            {howItWorksOpen && (
+              <div style={{ fontSize: 12, color: "#777", lineHeight: 1.7, padding: "12px 0", animation: "fadeUp 0.3s ease" }}>
+                <p style={{ marginBottom: 10 }}>
+                  Your question is sent to two independent AI prompts using the same model (Claude Haiku). One has standard helpful instructions. The other is prompted for blunt honesty. Neither sees the other&apos;s response.
+                </p>
+                <p style={{ marginBottom: 10 }}>
+                  A third prompt then compares both responses and scores the gap &mdash; how much did the &ldquo;helpful&rdquo; version soften, hide, or omit compared to the honest one?
+                </p>
+                <p style={{ color: "#555" }}>
+                  No data is stored or logged. Your question and the AI responses exist only for the duration of the request.
+                </p>
+              </div>
+            )}
           </div>
 
           <Footer />
