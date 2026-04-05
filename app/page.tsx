@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { stripMarkdown } from "@/lib/parseResponse";
 
 interface Result {
   defaultResponse: string;
@@ -26,7 +27,7 @@ const LOADING_MESSAGES = [
 ];
 
 function getScoreTier(score: number): { label: string; color: string } {
-  if (score >= 80) return { label: "Pure Sycophancy", color: "#ff2d2d" };
+  if (score >= 80) return { label: "Heavy Sycophancy", color: "#ff2d2d" };
   if (score >= 60) return { label: "Heavily Flattering", color: "#ff6b35" };
   if (score >= 40) return { label: "Typical AI Flattery", color: "#e8a317" };
   if (score >= 20) return { label: "Mildly Flattering", color: "#7acc29" };
@@ -291,9 +292,9 @@ export default function Home() {
           {/* Three-step explainer */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { num: "01", text: "Your question goes to a standard AI" },
-              { num: "02", text: "Same question goes to an AI prompted for honesty" },
-              { num: "03", text: "We measure the gap between them" },
+              { num: "01", text: "Your question goes to two independent AI prompts" },
+              { num: "02", text: "One responds naturally, one responds honestly" },
+              { num: "03", text: "A third prompt evaluates the gap" },
             ].map((step) => (
               <div key={step.num} style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
                 <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, color: "rgba(255,107,53,0.3)", fontSize: 15 }}>{step.num}</span>
@@ -337,7 +338,7 @@ export default function Home() {
   // RESULTS SCREEN
   if (screen === "results" && result) {
     if (typeof window !== "undefined") window.scrollTo(0, 0);
-    const shareText = `I asked AI to evaluate my idea.\nThen I asked again — honestly.\n\nSycophancy Score: ${result.score}/100 (${tier.label})\n\nWhat my AI hid from me:\n"${result.hidden}"\n\nTry it yourself → deflatter.vercel.app`;
+    const shareText = `I asked AI the same question twice — one default prompt, one honest prompt.\n\nSycophancy Gap: ${result.score}/100 (${tier.label})\n\nWhat the default prompt didn't say:\n"${result.hidden}"\n\nTwo independent prompts. One evaluator. Same model.\nTry it → deflatter.vercel.app`;
     const shareUrl = "https://deflatter.vercel.app";
 
     return (
@@ -349,6 +350,9 @@ export default function Home() {
             <ScoreRing score={result.score} color={tier.color} />
             <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700, color: tier.color, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 4 }}>
               {tier.label}
+            </div>
+            <div style={{ fontSize: 11, color: "#666", marginTop: 8 }}>
+              Estimates vary between runs · The comparison matters more than the number
             </div>
           </div>
 
@@ -403,14 +407,14 @@ export default function Home() {
               </button>
             </div>
             <div style={{ fontSize: 14, lineHeight: 1.75, whiteSpace: "pre-line", color: activeTab === "honest" ? "#ccc" : "#aaa", wordBreak: "break-word" as const }}>
-              {activeTab === "honest" ? result.honestResponse : result.defaultResponse}
+              {stripMarkdown(activeTab === "honest" ? result.honestResponse : result.defaultResponse)}
             </div>
           </div>
 
           {/* Beat 4 — Sycophancy Patterns */}
           <div style={{ animation: "fadeUp 0.5s ease both", animationDelay: "0.5s", marginBottom: 36 }}>
             <div style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, marginBottom: 14 }}>
-              Sycophancy Patterns Detected
+              Flattery Patterns Detected
             </div>
             {result.indicators.map((ind, i) => (
               <div key={i} style={{ fontSize: 13, color: "#999", borderLeft: "1px solid #444", paddingLeft: 14, marginBottom: 10, wordBreak: "break-word" as const, minWidth: 0 }}>
@@ -589,7 +593,7 @@ function Footer() {
   return (
     <div style={{ marginTop: 28, paddingTop: 12, borderTop: "1px solid #2a2a2a", textAlign: "center" }}>
       <div style={{ fontSize: 11, color: "#777" }}>
-        Both responses use the same model · Same question, different prompt
+        Two independent prompts · One evaluator · Same model throughout
       </div>
       <div style={{ fontSize: 12, marginTop: 6 }}>
         <a href="https://www.linkedin.com/in/rajivjacobcheriyan/" target="_blank" rel="noopener noreferrer" style={{ color: "#999", borderBottom: "1px solid #444", textDecoration: "none" }}>

@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { SYSTEM_PROMPT_DEFAULT, SYSTEM_PROMPT_HONEST, buildCallBMessage } from "@/lib/prompts";
-import { parseCallBResponse } from "@/lib/parseResponse";
+import { SYSTEM_PROMPT_DEFAULT, SYSTEM_PROMPT_HONEST, SYSTEM_PROMPT_EVALUATOR, buildEvaluatorMessage } from "@/lib/prompts";
+import { parseEvaluatorResponse } from "@/lib/parseResponse";
 import { checkRateLimit } from "@/lib/rateLimit";
 
 const MODEL = "claude-haiku-4-5-20251001";
@@ -54,28 +54,38 @@ export async function POST(request: NextRequest) {
 
     const anthropic = new Anthropic();
 
-    // Call A — Default AI response
-    const callA = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 250,
-      system: SYSTEM_PROMPT_DEFAULT,
-      messages: [{ role: "user", content: prompt }],
-    });
-    const defaultResponse = callA.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+    // Call A + B in parallel — independent, neither sees the other
+    const [callA, callB] = await Promise.all([
+      anthropic.messages.create({
+        model: MODEL,
+        max_tokens: 250,
+        system: SYSTEM_PROMPT_DEFAULT,
+        messages: [{ role: "user", content: prompt }],
+      }),
+      anthropic.messages.create({
+        model: MODEL,
+        max_tokens: 250,
+        system: SYSTEM_PROMPT_HONEST,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    ]);
 
-    // Call B — Honest response + sycophancy scoring
-    const callB = await anthropic.messages.create({
+    const defaultResponse = callA.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+    const honestResponse = callB.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+
+    // Call C — evaluator compares both responses
+    const callC = await anthropic.messages.create({
       model: MODEL,
-      max_tokens: 400,
-      system: SYSTEM_PROMPT_HONEST,
-      messages: [{ role: "user", content: buildCallBMessage(prompt, defaultResponse) }],
+      max_tokens: 300,
+      system: SYSTEM_PROMPT_EVALUATOR,
+      messages: [{ role: "user", content: buildEvaluatorMessage(prompt, defaultResponse, honestResponse) }],
     });
-    const callBRaw = callB.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
-    const parsed = parseCallBResponse(callBRaw);
+    const callCRaw = callC.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+    const parsed = parseEvaluatorResponse(callCRaw);
 
     return NextResponse.json({
       defaultResponse,
-      honestResponse: parsed.honest_response,
+      honestResponse,
       score: parsed.score,
       hidden: parsed.hidden,
       indicators: parsed.indicators,
