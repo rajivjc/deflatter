@@ -70,13 +70,10 @@ export default async function Image() {
               color: "#ffffff",
               lineHeight: 1.3,
               maxWidth: 800,
+              display: "flex",
             }}
           >
-            See What Your AI{" "}
-            <span style={{ color: "#ff6b35", fontWeight: 800 }}>
-              Won&apos;t Tell You
-            </span>{" "}
-            Straight
+            {"See What Your AI Won't Tell You Straight"}
           </div>
         </div>
 
