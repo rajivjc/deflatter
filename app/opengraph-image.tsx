@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "DeFlatter — See What AI Won't Tell You Straight";
+export const alt = "DeFlatter — See What Your AI Won't Tell You Straight";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -65,15 +65,15 @@ export default async function Image() {
           {/* Headline */}
           <div
             style={{
-              fontSize: 40,
-              fontWeight: 400,
-              color: "#cccccc",
+              fontSize: 44,
+              fontWeight: 600,
+              color: "#ffffff",
               lineHeight: 1.3,
               maxWidth: 800,
             }}
           >
-            See What AI{" "}
-            <span style={{ color: "#ff6b35", fontWeight: 600 }}>
+            See What Your AI{" "}
+            <span style={{ color: "#ff6b35", fontWeight: 800 }}>
               Won&apos;t Tell You
             </span>{" "}
             Straight
@@ -93,12 +93,34 @@ export default async function Image() {
           </div>
           <div
             style={{
-              fontSize: 24,
-              color: "#ff6b35",
-              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
             }}
           >
-            Try it free → deflatter.vercel.app
+            <div
+              style={{
+                fontSize: 24,
+                color: "#0a0a0a",
+                fontWeight: 700,
+                backgroundColor: "#ff6b35",
+                padding: "12px 28px",
+                borderRadius: 8,
+                display: "flex",
+              }}
+            >
+              Try It Free →
+            </div>
+            <div
+              style={{
+                fontSize: 22,
+                color: "#888888",
+                fontWeight: 500,
+                display: "flex",
+              }}
+            >
+              deflatter.vercel.app
+            </div>
           </div>
         </div>
       </div>
