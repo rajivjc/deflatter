@@ -88,6 +88,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized origin." }, { status: 403 });
     }
 
+    // --- SECURITY: Content-Type validation ---
+    const contentType = request.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return NextResponse.json({ error: "Unsupported media type." }, { status: 415 });
+    }
+
     // --- SECURITY: Request body size limit (10KB max) ---
     const contentLength = request.headers.get("content-length");
     if (contentLength && parseInt(contentLength, 10) > 10240) {
