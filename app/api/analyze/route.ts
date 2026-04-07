@@ -6,6 +6,13 @@ import { checkRateLimit } from "@/lib/rateLimit";
 
 const MODEL = "claude-haiku-4-5-20251001";
 
+// --- Timeout helper ---
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ms);
+  return promise.finally(() => clearTimeout(timeout));
+}
+
 // --- SECURITY: Allowed origins ---
 const ALLOWED_ORIGINS = [
   "https://deflatter.vercel.app",
@@ -88,6 +95,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized origin." }, { status: 403 });
     }
 
+    // --- SECURITY: Content-Type validation ---
+    const contentType = request.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return NextResponse.json({ error: "Unsupported media type." }, { status: 415 });
+    }
+
     // --- SECURITY: Request body size limit (10KB max) ---
     const contentLength = request.headers.get("content-length");
     if (contentLength && parseInt(contentLength, 10) > 10240) {
@@ -128,32 +141,38 @@ export async function POST(request: NextRequest) {
     const wrappedPrompt = wrapUserInput(prompt);
 
     // Call A + B in parallel — independent, neither sees the other
-    const [callA, callB] = await Promise.all([
-      anthropic.messages.create({
-        model: MODEL,
-        max_tokens: 120,
-        system: SYSTEM_PROMPT_DEFAULT,
-        messages: [{ role: "user", content: wrappedPrompt }],
-      }),
-      anthropic.messages.create({
-        model: MODEL,
-        max_tokens: 120,
-        system: SYSTEM_PROMPT_HONEST,
-        messages: [{ role: "user", content: wrappedPrompt }],
-      }),
-    ]);
+    const [callA, callB] = await withTimeout(
+      Promise.all([
+        anthropic.messages.create({
+          model: MODEL,
+          max_tokens: 120,
+          system: SYSTEM_PROMPT_DEFAULT,
+          messages: [{ role: "user", content: wrappedPrompt }],
+        }),
+        anthropic.messages.create({
+          model: MODEL,
+          max_tokens: 120,
+          system: SYSTEM_PROMPT_HONEST,
+          messages: [{ role: "user", content: wrappedPrompt }],
+        }),
+      ]),
+      15000
+    );
 
     const defaultResponse = redactPII(callA.content.filter((b) => b.type === "text").map((b) => b.text).join("\n"));
     const honestResponse = redactPII(callB.content.filter((b) => b.type === "text").map((b) => b.text).join("\n"));
 
     // Call C — evaluator compares both responses (uses raw prompt for context)
-    const callC = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 300,
-      temperature: 0.8,
-      system: SYSTEM_PROMPT_EVALUATOR,
-      messages: [{ role: "user", content: buildEvaluatorMessage(prompt, defaultResponse, honestResponse) }],
-    });
+    const callC = await withTimeout(
+      anthropic.messages.create({
+        model: MODEL,
+        max_tokens: 300,
+        temperature: 0.8,
+        system: SYSTEM_PROMPT_EVALUATOR,
+        messages: [{ role: "user", content: buildEvaluatorMessage(prompt, defaultResponse, honestResponse) }],
+      }),
+      15000
+    );
     const callCRaw = callC.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
     const parsed = parseEvaluatorResponse(callCRaw);
 
